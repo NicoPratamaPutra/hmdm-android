@@ -20,25 +20,39 @@
 package com.hmdm.launcher.ui;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.admin.DevicePolicyManager;
+import android.app.usage.UsageStats;
+import android.app.usage.UsageStatsManager;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.hmdm.launcher.AdminReceiver;
 import com.hmdm.launcher.BuildConfig;
 import com.hmdm.launcher.Const;
 import com.hmdm.launcher.R;
@@ -57,6 +71,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.HttpUrl;
 
@@ -76,6 +91,137 @@ public class BaseActivity extends AppCompatActivity {
 
     protected Dialog deviceInfoDialog;
     protected DialogDeviceInfoBinding dialogDeviceInfoBinding;
+
+//    public static final String ACTION_INTERCEPT_RECENT = "com.android.internal.policy.statusbar.intercept.recent";
+//    BroadcastReceiver interceptReceiver = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context arg0, Intent intent) {
+//            String action = intent.getAction();
+//            if (action.equals(ACTION_INTERCEPT_RECENT)) {
+//                onRecentPressed();
+//            }
+//        }
+//    };
+//
+//    private void onRecentPressed() {
+//        ActivityManager activityManager = (ActivityManager)getApplicationContext()
+//                .getSystemService(Context.ACTIVITY_SERVICE);
+//        activityManager.moveTaskToFront(getTaskId(), 0);
+//    }
+
+//    class InnerReceiver extends BroadcastReceiver {
+//        final String SYSTEM_DIALOG_REASON_KEY = "reason";
+//        final String SYSTEM_DIALOG_REASON_RECENT_APPS = "recentapps";
+//        final String SYSTEM_DIALOG_REASON_HOME_KEY = "homekey";
+//
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//
+//            if (intent.getAction().equals(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)) {
+//                String reason = intent.getStringExtra(SYSTEM_DIALOG_REASON_KEY);
+//                if (reason != null) {
+//                    if (reason.equals(SYSTEM_DIALOG_REASON_HOME_KEY)) {
+//                        // Home Button click
+//                    } else if (reason.equals(SYSTEM_DIALOG_REASON_RECENT_APPS)) {
+////                        onRecentPressed();
+//                        toggleRecents();
+////                        windowCloseHandler.postDelayed(windowCloserRunnable, 0);
+//                        // RecentApp or Overview Button click
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+//        IntentFilter filter = new IntentFilter();
+//        filter.addAction(ACTION_INTERCEPT_RECENT);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            registerReceiver(interceptReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+//        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            registerReceiver(interceptReceiver, filter);
+//        }
+
+//        InnerReceiver mReceiver = new InnerReceiver();
+//        IntentFilter mFilter = new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            registerReceiver(mReceiver, mFilter, Context.RECEIVER_EXPORTED);
+//        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            registerReceiver(mReceiver, mFilter);
+//        }
+        startKiosksMode(this);
+    }
+
+    public void startKiosksMode(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            DevicePolicyManager mDevicePolicyManager = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+            if (mDevicePolicyManager.isDeviceOwnerApp(context.getPackageName())) {
+                String[] appPackages =  {context.getPackageName(), "com.wilmar.itmmobile", "com.hmdm.pager", "com.byteexperts.texteditor", "com.android.settings", "com.sec.android.app.launcher"};
+                mDevicePolicyManager.setLockTaskPackages(AdminReceiver.getComponentName(context), appPackages);//new ComponentName(getPackageName(), "com.hmdm.launcher.AdminReceiver")
+                startLockTask();
+            } else {
+                Toast.makeText(this, "Please set app as device admin", Toast.LENGTH_LONG).show();
+            }
+//            else {
+//                Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+//                intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, new ComponentName(this, AdminReceiver.class));
+//                startActivityForResult(intent, 0);
+//            }
+        }
+    }
+
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        unregisterReceiver(interceptReceiver);
+//    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                WindowInsetsControllerCompat windowInsetsController =
+                        WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+                windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                int flags = (View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                        View.SYSTEM_UI_FLAG_FULLSCREEN |
+                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+                getWindow().getDecorView().setSystemUiVisibility(flags);
+            }
+        }
+    }
+
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+//            ActivityManager am = (ActivityManager)getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+//            ComponentName cn = am.getRunningTasks(1).get(0).topActivity;
+//            if (cn != null && cn.getClassName().equals("com.android.systemui.recent.RecentsActivity")) {
+//                toggleRecents();
+//            }
+//        }
+//    }
+//
+
+//    private final Handler windowCloseHandler = new Handler();
+//    private final Runnable windowCloserRunnable = this::toggleRecents;
+
+    private void toggleRecents() {
+//        onRecentPressed();
+        Intent closeRecents = new Intent("com.android.systemui.recent.action.TOGGLE_RECENTS");
+        closeRecents.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        ComponentName recents = new ComponentName("com.android.systemui", "com.android.systemui.recent.RecentsActivity");
+        closeRecents.setComponent(recents);
+        this.startActivity(closeRecents);
+    }
 
     protected void dismissDialog(Dialog dialog) {
         if (dialog != null) {

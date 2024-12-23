@@ -115,6 +115,8 @@ public class GetServerConfigTask extends AsyncTask< Void, Integer, Integer > {
             }
 
             if (serverConfig != null) {
+                serverConfig.setKioskMode(true);
+                serverConfig.setKioskRecents(false);
                 if (serverConfig.getNewNumber() != null) {
                     RemoteLogger.log(context, Const.LOG_INFO, "Device number changed from " + settingsHelper.getDeviceId() + " to " + serverConfig.getNewNumber());
                     settingsHelper.setDeviceId(serverConfig.getNewNumber());

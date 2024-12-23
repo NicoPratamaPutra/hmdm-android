@@ -23,6 +23,8 @@ import static android.app.admin.DevicePolicyManager.EXTRA_PROVISIONING_ADMIN_EXT
 import static android.content.Context.MODE_PRIVATE;
 
 import android.app.admin.DeviceAdminReceiver;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,6 +42,10 @@ import com.hmdm.launcher.util.PreferenceLogger;
  */
 
 public class AdminReceiver extends DeviceAdminReceiver {
+
+    public static ComponentName getComponentName(Context context) {
+        return new ComponentName(context.getApplicationContext(), AdminReceiver.class);
+    }
 
     @Override
     public void onEnabled(Context context, Intent intent) {
