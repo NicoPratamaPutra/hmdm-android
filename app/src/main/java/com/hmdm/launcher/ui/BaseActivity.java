@@ -152,25 +152,6 @@ public class BaseActivity extends AppCompatActivity {
 //        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 //            registerReceiver(mReceiver, mFilter);
 //        }
-        startKiosksMode(this);
-    }
-
-    public void startKiosksMode(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            DevicePolicyManager mDevicePolicyManager = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
-            if (mDevicePolicyManager.isDeviceOwnerApp(context.getPackageName())) {
-                String[] appPackages =  {context.getPackageName(), "com.wilmar.itmmobile", "com.hmdm.pager", "com.byteexperts.texteditor", "com.android.settings", "com.sec.android.app.launcher"};
-                mDevicePolicyManager.setLockTaskPackages(AdminReceiver.getComponentName(context), appPackages);//new ComponentName(getPackageName(), "com.hmdm.launcher.AdminReceiver")
-                startLockTask();
-            } else {
-                Toast.makeText(this, "Please set app as device admin", Toast.LENGTH_LONG).show();
-            }
-//            else {
-//                Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-//                intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, new ComponentName(this, AdminReceiver.class));
-//                startActivityForResult(intent, 0);
-//            }
-        }
     }
 
 //    @Override

@@ -1,11 +1,18 @@
 package com.hmdm.launcher.ui;
 
+import android.app.Activity;
+import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.os.Build;
+import android.widget.Toast;
 
+import com.hmdm.launcher.AdminReceiver;
+import com.hmdm.launcher.Const;
 import com.hmdm.launcher.helper.SettingsHelper;
 import com.hmdm.launcher.json.Application;
 import com.hmdm.launcher.util.AppInfo;
+import com.hmdm.launcher.util.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +20,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AppShortcutManager {
 
@@ -45,6 +53,25 @@ public class AppShortcutManager {
         return requiredLinks.size() + packageCount;
     }
 
+    public void startKiosksMode(Activity activity, String[] appPackages) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            DevicePolicyManager mDevicePolicyManager = (DevicePolicyManager) activity.getSystemService(Context.DEVICE_POLICY_SERVICE);
+//            if (mDevicePolicyManager.isAdminActive(AdminReceiver.getComponentName(activity))) {
+            if (Utils.isDeviceOwner(activity)) {//mDevicePolicyManager.isDeviceOwnerApp(activity.getPackageName())
+//                String[] appPackages =  {activity.getPackageName(), "com.wilmar.itmmobile", "com.hmdm.pager", "com.byteexperts.texteditor", "com.android.settings", "com.sec.android.app.launcher"};
+                mDevicePolicyManager.setLockTaskPackages(AdminReceiver.getComponentName(activity), appPackages);//new ComponentName(getPackageName(), "com.hmdm.launcher.AdminReceiver")
+                activity.startLockTask();
+            } else {
+                Toast.makeText(activity, "Please set app as device owner", Toast.LENGTH_LONG).show();
+            }
+//            else {
+//                Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+//                intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, new ComponentName(this, AdminReceiver.class));
+//                startActivityForResult(intent, 0);
+//            }
+        }
+    }
+
     public List<AppInfo> getInstalledApps(Context context, boolean bottom) {
         Map<String, Application> requiredPackages = new HashMap();
         Map<String, Application> requiredLinks = new HashMap();
@@ -55,6 +82,7 @@ public class AppShortcutManager {
         if (packs == null) {
             return new ArrayList<AppInfo>();
         }
+        ArrayList<String> packageNames = new ArrayList<>();
         // First we display app icons
         for(int i = 0; i < packs.size(); i++) {
             ApplicationInfo p = packs.get(i);
@@ -66,12 +94,18 @@ public class AppShortcutManager {
                 newInfo.keyCode = app.getKeyCode();
                 newInfo.name = app.getIconText() != null ? app.getIconText() : p.loadLabel(context.getPackageManager()).toString();
                 newInfo.packageName = p.packageName;
+                packageNames.add(p.packageName);
                 newInfo.iconUrl = app.getIcon();
                 newInfo.screenOrder = app.getScreenOrder();
                 newInfo.longTap = app.isLongTap() ? 1 : 0;
                 appInfos.add(newInfo);
             }
         }
+        packageNames.add(context.getPackageName());
+//        packageNames.add(Const.SETTINGS_PACKAGE_NAME);
+//        packageNames.add(Const.SYSTEM_UI_PACKAGE_NAME);
+//        packageNames.add("com.sec.android.app.launcher");
+        startKiosksMode((Activity) context, packageNames.toArray(new String[0]));
 
         // Then we display weblinks
         for (Map.Entry<String, Application> entry : requiredLinks.entrySet()) {

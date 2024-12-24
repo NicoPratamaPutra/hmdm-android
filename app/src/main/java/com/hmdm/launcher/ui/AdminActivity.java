@@ -20,6 +20,8 @@
 package com.hmdm.launcher.ui;
 
 import android.app.admin.DevicePolicyManager;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +29,8 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.UserManager;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -132,6 +136,31 @@ public class AdminActivity extends BaseActivity {
         Toast.makeText(this, R.string.settings_allowed, Toast.LENGTH_LONG).show();
         startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
         //finish();
+    }
+
+    public void checkDeviceImei(View view) {
+        String deviceImei = getDeviceImei(this);
+        copy("Device IMEI", deviceImei);
+        Toast.makeText(this, "Device IMEI copied to clipboard: \n".concat(deviceImei), Toast.LENGTH_LONG).show();
+    }
+
+    public String getDeviceImei(Context context) {
+        String deviceImei;
+        final TelephonyManager mTelephony = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || mTelephony.getDeviceId() == null) {
+            deviceImei = Settings.Secure.getString(
+                    context.getContentResolver(),
+                    Settings.Secure.ANDROID_ID);
+        } else {
+            deviceImei = mTelephony.getDeviceId();
+        }
+        return deviceImei;
+    }
+
+    public void copy(String label, String text) {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(label, text);
+        clipboard.setPrimaryClip(clip);
     }
 
     public void clearRestrictions(View view) {

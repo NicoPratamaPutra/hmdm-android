@@ -49,6 +49,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -2429,6 +2430,9 @@ public class MainActivity
                     dialogEnterPasswordBinding.setError( false );
                     if (ProUtils.kioskModeRequired(MainActivity.this)) {
                         ProUtils.unlockKiosk(MainActivity.this);
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        stopLockTask();
                     }
                     RemoteLogger.log(MainActivity.this, Const.LOG_INFO, "Administrator panel opened");
                     startActivity( new Intent( MainActivity.this, AdminActivity.class ) );
