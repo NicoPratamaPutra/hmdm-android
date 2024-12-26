@@ -55,11 +55,11 @@ public class AppShortcutManager {
 
     public void startKiosksMode(Activity activity, String[] appPackages) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            DevicePolicyManager mDevicePolicyManager = (DevicePolicyManager) activity.getSystemService(Context.DEVICE_POLICY_SERVICE);
+            DevicePolicyManager dpm = (DevicePolicyManager) activity.getSystemService(Context.DEVICE_POLICY_SERVICE);
 //            if (mDevicePolicyManager.isAdminActive(AdminReceiver.getComponentName(activity))) {
             if (Utils.isDeviceOwner(activity)) {//mDevicePolicyManager.isDeviceOwnerApp(activity.getPackageName())
 //                String[] appPackages =  {activity.getPackageName(), "com.wilmar.itmmobile", "com.hmdm.pager", "com.byteexperts.texteditor", "com.android.settings", "com.sec.android.app.launcher"};
-                mDevicePolicyManager.setLockTaskPackages(AdminReceiver.getComponentName(activity), appPackages);//new ComponentName(getPackageName(), "com.hmdm.launcher.AdminReceiver")
+                dpm.setLockTaskPackages(AdminReceiver.getComponentName(activity), appPackages);//new ComponentName(getPackageName(), "com.hmdm.launcher.AdminReceiver")
                 activity.startLockTask();
             } else {
                 Toast.makeText(activity, "Please set app as device owner", Toast.LENGTH_LONG).show();

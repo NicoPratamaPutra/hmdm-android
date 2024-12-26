@@ -146,8 +146,9 @@ public class InitialSetupActivity extends BaseActivity implements ConfigUpdater.
             new AlertDialog.Builder(this)
                     .setMessage(message)
                     .setNeutralButton(R.string.main_activity_details, (dialogInterface, i) -> details(detailsText))
-                    .setNegativeButton(R.string.main_activity_wifi, (dialogInterface, i) -> openWiFiSettings())
+//                    .setNegativeButton(R.string.main_activity_wifi, (dialogInterface, i) -> openWiFiSettings())
                     .setPositiveButton(R.string.main_activity_repeat, (dialogInterface, i) -> updateConfig())
+                    .setNegativeButton(R.string.main_activity_cancel, ((dialogInterface, i) -> dialogInterface.dismiss()))
                     .create()
                     .show();
         } catch (/*BadToken*/Exception e) {

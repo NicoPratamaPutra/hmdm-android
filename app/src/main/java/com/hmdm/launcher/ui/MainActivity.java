@@ -2204,7 +2204,6 @@ public class MainActivity
 
     public void networkErrorResetClicked( View view ) {
         dismissDialog(networkErrorDialog);
-
         Log.i(Const.LOG_TAG, "networkErrorResetClicked(): calling updateConfig()");
         settingsHelper.setDeviceId("");
         settingsHelper.setBaseUrl("");
@@ -2225,6 +2224,26 @@ public class MainActivity
                 startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
             }
         }, 500);
+    }
+
+    public void networkErrorWipeClicked (View view ) {
+        Log.i(Const.LOG_TAG, "networkErrorWipeClicked(): confirm factory reset");
+        createAndShowConfirmWipeDialog();
+    }
+
+    public void confirmWipeResetClicked (View view) {
+        Log.i(Const.LOG_TAG, "confirmWipeResetClicked(): execute factory reset");
+        //        configUpdater.checkFactoryReset();
+        if (!Utils.factoryReset(this)) {
+            RemoteLogger.log(this, Const.LOG_WARN, "Device reset failed");
+            Toast.makeText(this, "Failed!", Toast.LENGTH_LONG).show();
+            dismissDialog(confirmWipeDialog);
+        }
+    }
+
+    public void confirmWipeCancelClicked (View view) {
+        Log.i(Const.LOG_TAG, "confirmWipeCancelClicked(): cancel factory reset");
+        dismissDialog(confirmWipeDialog);
     }
 
     public void networkErrorCancelClicked(View view) {

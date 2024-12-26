@@ -37,18 +37,7 @@
             android:layout_width="@dimen/dialog_enter_device_id_width"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:text="@string/dialog_network_error_title"/>
-
-        <TextView
-            android:id="@+id/details"
-            android:layout_width="@dimen/dialog_enter_device_id_width"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="@string/main_activity_details"
-            android:textColor="@color/colorAccent"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:onClick="networkErrorDetailsClicked"
-            />
+            android:text="Confirm to wipe data? This will factory reset the device." />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -59,20 +48,13 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/repeatButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/main_activity_repeat"
-                android:onClick="networkErrorRepeatClicked"/>
-
-            <Button
                 android:id="@+id/resetButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@string/main_activity_reset"
-                android:onClick="networkErrorResetClicked"/>
+                android:text="Factory Reset"
+                android:backgroundTint="@android:color/holo_red_dark"
+                android:onClick="confirmWipeResetClicked"/>
 
 <!--            <Button-->
 <!--                android:id="@+id/wifiButton"-->
@@ -88,17 +70,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="@string/main_activity_cancel"
-                android:onClick="networkErrorCancelClicked"/>
+                android:onClick="confirmWipeCancelClicked" />
 
         </LinearLayout>
-
-        <Button
-            android:id="@+id/wipeButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Wipe"
-            android:onClick="networkErrorWipeClicked"/>
 
     </LinearLayout>
 

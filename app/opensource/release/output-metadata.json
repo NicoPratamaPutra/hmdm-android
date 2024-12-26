@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.hmdm.launcher",
+  "variantName": "opensourceRelease",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 15130,
+      "versionName": "6.4.0",
+      "outputFile": "hmdm_opensourceRelease_6.4.0.apk"
+    }
+  ],
+  "elementType": "File"
+}

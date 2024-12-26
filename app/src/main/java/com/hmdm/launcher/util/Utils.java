@@ -47,6 +47,7 @@ import android.os.UserManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -384,6 +385,8 @@ public class Utils {
             }
             return true;
         } catch (Exception e) {
+            Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
+            Log.e("Utils", e.toString());
             return false;
         }
     }

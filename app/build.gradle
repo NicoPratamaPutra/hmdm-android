@@ -30,13 +30,26 @@ repositories {
 }
 
 android {
+    signingConfigs {
+        prd {
+            storeFile file('hmdm_keystore.jks')
+            storePassword 'hmdm-4ndr01d'
+            keyAlias 'hmdm'
+            keyPassword 'hmdm-4ndr01d'
+        }
+    }
+    applicationVariants.configureEach { variant ->
+        variant.outputs.configureEach {
+            outputFileName = "hmdm_${variant.name}_${variant.versionName}.apk"
+        }
+    }
     compileSdkVersion 34
     defaultConfig {
         applicationId "com.hmdm.launcher"
         minSdkVersion 16
         targetSdkVersion 34
         versionCode 15130
-        versionName "6.13"
+        versionName "6.4.0"//6.13
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         dataBinding {
             enabled = true

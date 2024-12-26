@@ -56,6 +56,7 @@ import com.hmdm.launcher.AdminReceiver;
 import com.hmdm.launcher.BuildConfig;
 import com.hmdm.launcher.Const;
 import com.hmdm.launcher.R;
+import com.hmdm.launcher.databinding.DialogConfirmWipeBinding;
 import com.hmdm.launcher.databinding.DialogDeviceInfoBinding;
 import com.hmdm.launcher.databinding.DialogEnterDeviceIdBinding;
 import com.hmdm.launcher.databinding.DialogEnterServerBinding;
@@ -88,6 +89,9 @@ public class BaseActivity extends AppCompatActivity {
     protected Dialog networkErrorDialog;
     protected DialogNetworkErrorBinding dialogNetworkErrorBinding;
     protected String networkErrorDetails;
+
+    protected Dialog confirmWipeDialog;
+    protected DialogConfirmWipeBinding dialogConfirmWipeBinding;
 
     protected Dialog deviceInfoDialog;
     protected DialogDeviceInfoBinding dialogDeviceInfoBinding;
@@ -407,7 +411,7 @@ public class BaseActivity extends AppCompatActivity {
         dialogNetworkErrorBinding.title.setText(getString(R.string.dialog_network_error_title, serverUrl));
 
         dialogNetworkErrorBinding.resetButton.setVisibility(showResetButton ? View.VISIBLE : View.GONE);
-        dialogNetworkErrorBinding.wifiButton.setVisibility(showWifiButton ? View.VISIBLE : View.GONE);
+//        dialogNetworkErrorBinding.wifiButton.setVisibility(showWifiButton ? View.VISIBLE : View.GONE);
 
         networkErrorDialog.setContentView( dialogNetworkErrorBinding.getRoot() );
         try {
@@ -418,6 +422,25 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
+    protected void createAndShowConfirmWipeDialog() {
+        dismissDialog(confirmWipeDialog);
+        confirmWipeDialog = new Dialog( this );
+        dialogConfirmWipeBinding = DataBindingUtil.inflate(
+                LayoutInflater.from( this ),
+                R.layout.dialog_confirm_wipe,
+                null,
+                false );
+        confirmWipeDialog.setCancelable( false );
+        confirmWipeDialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
+
+        confirmWipeDialog.setContentView( dialogConfirmWipeBinding.getRoot() );
+        try {
+            confirmWipeDialog.show();
+        } catch (Exception e) {
+            // Unable to add window -- token is not valid; is your activity running?
+            e.printStackTrace();
+        }
+    }
 
     protected void createAndShowServerDialog(boolean error, String serverName, String serverPath) {
         dismissDialog(enterServerDialog);
