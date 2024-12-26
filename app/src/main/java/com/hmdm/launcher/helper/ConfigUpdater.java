@@ -319,7 +319,7 @@ public class ConfigUpdater {
         }
     }
 
-    private void checkFactoryReset() {
+    public void checkFactoryReset() {
         Log.d(Const.LOG_TAG, "checkFactoryReset() called");
         ServerConfig config = settingsHelper != null ? settingsHelper.getConfig() : null;
         if (config != null && config.getFactoryReset() != null && config.getFactoryReset()) {

@@ -2236,7 +2236,6 @@ public class MainActivity
         //        configUpdater.checkFactoryReset();
         if (!Utils.factoryReset(this)) {
             RemoteLogger.log(this, Const.LOG_WARN, "Device reset failed");
-            Toast.makeText(this, "Failed!", Toast.LENGTH_LONG).show();
             dismissDialog(confirmWipeDialog);
         }
     }
