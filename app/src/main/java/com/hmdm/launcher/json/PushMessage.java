@@ -41,6 +41,7 @@ public class PushMessage {
     public static final String TYPE_EXIT_KIOSK = "exitKiosk";
     public static final String TYPE_CLEAR_DOWNLOADS = "clearDownloadHistory";
     public static final String TYPE_SETTINGS = "settings";
+    public static final String TYPE_MESSAGE  = "textMessage";
 
     public String getMessageType() {
         return messageType;

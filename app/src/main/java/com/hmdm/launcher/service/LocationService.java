@@ -117,7 +117,7 @@ public class LocationService extends Service {
         NotificationCompat.Builder builder;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Notification Channel", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Notification Channel", NotificationManager.IMPORTANCE_MAX);
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(channel);
             builder = new NotificationCompat.Builder(this, CHANNEL_ID);
@@ -128,7 +128,8 @@ public class LocationService extends Service {
                 .setContentTitle(ProUtils.getAppName(this))
                 .setTicker(ProUtils.getAppName(this))
                 .setContentText( getString( R.string.location_service_text ) )
-                .setSmallIcon( R.drawable.ic_location_service ).build();
+                .setSmallIcon( R.drawable.ic_location_service )
+                .setPriority(Notification.PRIORITY_MAX).build();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION);

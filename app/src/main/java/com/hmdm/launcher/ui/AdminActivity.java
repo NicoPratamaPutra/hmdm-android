@@ -35,6 +35,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -76,11 +77,18 @@ public class AdminActivity extends BaseActivity {
         binding.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                updateConfig(v);
+//                finish();
+            }
+        });
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                updateConfig();
             }
         });
         binding.toolbar.setTitle(ProUtils.getAppName(this));
-        binding.toolbar.setSubtitle(ProUtils.getCopyright(this));
+//        binding.toolbar.setSubtitle(ProUtils.getCopyright(this));
 
         // If QR code doesn't contain "android.app.extra.PROVISIONING_LEAVE_ALL_SYSTEM_APPS_ENABLED":true
         // the system launcher is turned off, so it's not possible to exit and we must hide the exit button
@@ -124,11 +132,6 @@ public class AdminActivity extends BaseActivity {
     public void changeDeviceId(View view) {
         dismissDialog(enterDeviceIdDialog);
         createAndShowEnterDeviceIdDialog(false, settingsHelper.getDeviceId());
-    }
-
-    public void changeServerUrl(View view) {
-        dismissDialog(enterServerDialog);
-        createAndShowServerDialog(false, settingsHelper.getBaseUrl(), settingsHelper.getServerProject());
     }
 
     public void allowSettings(View view) {
@@ -219,6 +222,10 @@ public class AdminActivity extends BaseActivity {
     }
 
     public void updateConfig( View view ) {
+       updateConfig();
+    }
+
+    private void updateConfig() {
         LocalBroadcastManager.getInstance( this ).
                 sendBroadcast( new Intent( Const.ACTION_UPDATE_CONFIGURATION ) );
         finish();

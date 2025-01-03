@@ -726,7 +726,7 @@ public class MqttService extends Service implements MqttTraceHandler {
         NotificationCompat.Builder builder;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Notification Channel", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Notification Channel", NotificationManager.IMPORTANCE_MAX);
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(channel);
             builder = new NotificationCompat.Builder(this, CHANNEL_ID);
@@ -737,7 +737,8 @@ public class MqttService extends Service implements MqttTraceHandler {
                 .setContentTitle(ProUtils.getAppName(this))
                 .setTicker(ProUtils.getAppName(this))
                 .setContentText(getString(R.string.mqtt_service_text))
-                .setSmallIcon(R.drawable.ic_mqtt_service).build();
+                .setSmallIcon(R.drawable.ic_mqtt_service)
+                .setPriority(Notification.PRIORITY_MAX).build();
 
         Utils.startStableForegroundService(this, NOTIFICATION_ID, notification);
     }

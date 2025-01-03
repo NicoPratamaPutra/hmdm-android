@@ -19,7 +19,7 @@
 
 <resources>
     <string name="white_app_name" translatable="false">MDM Agent</string>
-    <string name="app_name" translatable="false">Headwind MDM</string>
+    <string name="app_name" translatable="false">Wilmar Mobile Device Management</string>
     <string name="admin_title">Administrator</string>
     <string name="vendor" translatable="false">h-mdm.com</string>
     <string name="install_error">Error installing</string>

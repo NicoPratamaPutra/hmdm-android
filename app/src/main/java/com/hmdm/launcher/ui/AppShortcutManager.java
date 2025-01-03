@@ -60,6 +60,9 @@ public class AppShortcutManager {
             if (Utils.isDeviceOwner(activity)) {//mDevicePolicyManager.isDeviceOwnerApp(activity.getPackageName())
 //                String[] appPackages =  {activity.getPackageName(), "com.wilmar.itmmobile", "com.hmdm.pager", "com.byteexperts.texteditor", "com.android.settings", "com.sec.android.app.launcher"};
                 dpm.setLockTaskPackages(AdminReceiver.getComponentName(activity), appPackages);//new ComponentName(getPackageName(), "com.hmdm.launcher.AdminReceiver")
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    dpm.setLockTaskFeatures(AdminReceiver.getComponentName(activity), DevicePolicyManager.LOCK_TASK_FEATURE_SYSTEM_INFO | DevicePolicyManager.LOCK_TASK_FEATURE_NOTIFICATIONS | DevicePolicyManager.LOCK_TASK_FEATURE_HOME);
+                }
                 activity.startLockTask();
             } else {
                 Toast.makeText(activity, "Please set app as device owner", Toast.LENGTH_LONG).show();

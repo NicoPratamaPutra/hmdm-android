@@ -31,9 +31,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -66,6 +68,7 @@ import com.hmdm.launcher.json.DeviceCreateOptions;
 import com.hmdm.launcher.json.ServerConfig;
 import com.hmdm.launcher.server.ServerUrl;
 import com.hmdm.launcher.util.DeviceInfoProvider;
+import com.hmdm.launcher.util.RemoteLogger;
 import com.hmdm.launcher.util.Utils;
 
 import org.json.JSONObject;
@@ -156,6 +159,23 @@ public class BaseActivity extends AppCompatActivity {
 //        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 //            registerReceiver(mReceiver, mFilter);
 //        }
+    }
+
+    private void goToNotificationSettings(Context context) {
+        Intent intent = new Intent();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+            intent.putExtra("app_package", context.getPackageName());
+            intent.putExtra("app_uid", context.getApplicationInfo().uid);
+        } else {
+            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            intent.setData(Uri.parse("package:" + context.getPackageName()));
+        }
+        context.startActivity(intent);
     }
 
 //    @Override
@@ -587,6 +607,31 @@ public class BaseActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         startActivity(Intent.createChooser(intent, getString(R.string.select_system_launcher, getString(R.string.white_app_name))));
+    }
+
+    public void changeServerUrl(View view) {
+        dismissDialog(enterServerDialog);
+        SettingsHelper settingsHelper = SettingsHelper.getInstance(this);
+        createAndShowServerDialog(false, settingsHelper.getBaseUrl(), settingsHelper.getServerProject());
+    }
+
+    public void networkErrorWipeClicked (View view ) {
+        Log.i(Const.LOG_TAG, "networkErrorWipeClicked(): confirm factory reset");
+        createAndShowConfirmWipeDialog();
+    }
+
+    public void confirmWipeResetClicked (View view) {
+        Log.i(Const.LOG_TAG, "confirmWipeResetClicked(): execute factory reset");
+        //        configUpdater.checkFactoryReset();
+        if (!Utils.factoryReset(this)) {
+            RemoteLogger.log(this, Const.LOG_WARN, "Device reset failed");
+            dismissDialog(confirmWipeDialog);
+        }
+    }
+
+    public void confirmWipeCancelClicked (View view) {
+        Log.i(Const.LOG_TAG, "confirmWipeCancelClicked(): cancel factory reset");
+        dismissDialog(confirmWipeDialog);
     }
 
 }

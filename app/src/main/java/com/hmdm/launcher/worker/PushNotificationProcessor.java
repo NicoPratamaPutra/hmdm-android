@@ -19,27 +19,34 @@
 
 package com.hmdm.launcher.worker;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
+import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.hmdm.launcher.Const;
+import com.hmdm.launcher.R;
 import com.hmdm.launcher.db.DatabaseHelper;
 import com.hmdm.launcher.db.DownloadTable;
 import com.hmdm.launcher.helper.ConfigUpdater;
 import com.hmdm.launcher.json.Download;
 import com.hmdm.launcher.json.PushMessage;
+import com.hmdm.launcher.pro.ProUtils;
 import com.hmdm.launcher.util.InstallUtils;
 import com.hmdm.launcher.util.RemoteLogger;
 import com.hmdm.launcher.util.SystemUtils;
 import com.hmdm.launcher.util.Utils;
 
+import org.eclipse.paho.android.service.MqttService;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -100,6 +107,9 @@ public class PushNotificationProcessor {
         } else if (message.getMessageType().equals(PushMessage.TYPE_SETTINGS)) {
             // Clear download history
             AsyncTask.execute(() -> openSettings(context, message.getPayloadJSON()));
+            return;
+        } else if (message.getMessageType().equals(PushMessage.TYPE_MESSAGE)) {
+            sendMessageNotification(context, message.getPayloadJSON());
             return;
         }
 
@@ -325,6 +335,41 @@ public class PushNotificationProcessor {
             context.startActivity(i);
         } catch (Exception e) {
             RemoteLogger.log(context, Const.LOG_WARN, "Open settings failed: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private static void sendMessageNotification(Context context, JSONObject payload) {
+        if (payload == null) {
+            RemoteLogger.log(context, Const.LOG_WARN, "Open settings failed: no action specified");
+            return;
+        }
+
+        try {
+            String text = payload.getString("text");
+            NotificationCompat.Builder builder;
+            String CHANNEL_ID = MqttService.class.getName();
+            int MESSAGE_NOTIFICATION_ID = 114;
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Notification Channel", NotificationManager.IMPORTANCE_MAX);
+//                notificationManager.createNotificationChannel(channel);
+                builder = new NotificationCompat.Builder(context, CHANNEL_ID);
+            } else {
+                builder = new NotificationCompat.Builder( context );
+            }
+            Notification notification = builder
+                    .setContentTitle(ProUtils.getAppName(context))
+                    .setTicker(ProUtils.getAppName(context))
+                    .setContentText(text)
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+                    .setSmallIcon(R.drawable.ic_mqtt_service)
+                    .setPriority(Notification.PRIORITY_MAX).build();
+            notificationManager.notify(MESSAGE_NOTIFICATION_ID, notification);
+
+            Log.d(Const.LOG_TAG, "Showing message pop-up notification: " + text);
+        } catch (Exception e) {
+            RemoteLogger.log(context, Const.LOG_WARN, "Showing message pop-up notification failed: " + e.getMessage());
             e.printStackTrace();
         }
     }

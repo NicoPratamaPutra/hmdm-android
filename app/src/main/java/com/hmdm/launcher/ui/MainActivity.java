@@ -1652,7 +1652,7 @@ public class MainActivity
         }
 
         // TODO: Somehow binding is null here which causes a crash. Not sure why this could happen.
-        if ( config.getBackgroundColor() != null ) {
+        if ( config.getBackgroundColor() != null) {
             try {
                 binding.activityMainContentWrapper.setBackgroundColor(Color.parseColor(config.getBackgroundColor()));
             } catch (Exception e) {
@@ -1906,6 +1906,7 @@ public class MainActivity
                     .replace(ServerConfig.TITLE_EXTERNAL_IP, ip)
                     .replace("\\n", "\n");
             binding.activityMainTitle.setText(titleText);
+            binding.activityMainVersion.setText(BuildConfig.VERSION_NAME);
         } else {
             binding.activityMainTitle.setVisibility(View.GONE);
         }
@@ -2224,25 +2225,6 @@ public class MainActivity
                 startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
             }
         }, 500);
-    }
-
-    public void networkErrorWipeClicked (View view ) {
-        Log.i(Const.LOG_TAG, "networkErrorWipeClicked(): confirm factory reset");
-        createAndShowConfirmWipeDialog();
-    }
-
-    public void confirmWipeResetClicked (View view) {
-        Log.i(Const.LOG_TAG, "confirmWipeResetClicked(): execute factory reset");
-        //        configUpdater.checkFactoryReset();
-        if (!Utils.factoryReset(this)) {
-            RemoteLogger.log(this, Const.LOG_WARN, "Device reset failed");
-            dismissDialog(confirmWipeDialog);
-        }
-    }
-
-    public void confirmWipeCancelClicked (View view) {
-        Log.i(Const.LOG_TAG, "confirmWipeCancelClicked(): cancel factory reset");
-        dismissDialog(confirmWipeDialog);
     }
 
     public void networkErrorCancelClicked(View view) {
