@@ -42,6 +42,7 @@ public class PushMessage {
     public static final String TYPE_CLEAR_DOWNLOADS = "clearDownloadHistory";
     public static final String TYPE_SETTINGS = "settings";
     public static final String TYPE_MESSAGE  = "textMessage";
+    public static final String TYPE_FACTORY_RESET = "factoryReset";
 
     public String getMessageType() {
         return messageType;

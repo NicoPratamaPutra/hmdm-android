@@ -111,6 +111,9 @@ public class PushNotificationProcessor {
         } else if (message.getMessageType().equals(PushMessage.TYPE_MESSAGE)) {
             sendMessageNotification(context, message.getPayloadJSON());
             return;
+        } else if (message.getMessageType().equals(PushMessage.TYPE_FACTORY_RESET)) {
+            AsyncTask.execute(() -> factoryReset(context));
+            return;
         }
 
         // Send broadcast to all plugins
@@ -301,6 +304,17 @@ public class PushNotificationProcessor {
             }
         } else {
             RemoteLogger.log(context, Const.LOG_WARN, "Reboot failed: no permissions");
+        }
+    }
+
+    private static void factoryReset(Context context) {
+        RemoteLogger.log(context, Const.LOG_WARN, "Factory Reset by a Push message");
+        if (Utils.checkAdminMode(context)) {
+            if (!Utils.factoryReset(context)) {
+                RemoteLogger.log(context, Const.LOG_WARN, "Factory Reset failed");
+            }
+        } else {
+            RemoteLogger.log(context, Const.LOG_WARN, "Factory Reset failed: no permissions");
         }
     }
 
